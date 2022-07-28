@@ -15,7 +15,7 @@ EEMO_Analysis <- EEMO_Analysis[-c(2:3,7,26:59)]
 head(EEMO_Analysis)
 
 ### adding a new column for Days: time video has been on the platform
-EEMO_Analysis$Days <- as.numeric(difftime(EEMO_Analysis$`Finish Date`, EEMO_Analysis$`Upload Date`, units = "days"))
+EEMO_backup$Days <- as.numeric(difftime(EEMO_Analysis$`Finish Date`, EEMO_Analysis$`Upload Date`, units = "days"))
 
 # remove columns again
 #EEMO_Analysis <- EEMO_Analysis[-c(2,5,6,12,21)]
@@ -174,19 +174,16 @@ ggplot(data = EEMO_Analysis) +
   ggtitle("Scatterplot of Days vs. Shares per Follower")
 
 # regression with views_per_follower
-model1 <- glm(views_per_follower ~  Length +
-                                    Likes +
-                                    Comments +
+model1 <- lm(views_per_follower ~  
                                     evalance...16+
                                     earousal...17 + 
                                     scaled_lift + 
                                     scaledReactionValence...20 +
-                                    scaledReactionIntensity...21 +
-                                    Days,
+                                    scaledReactionIntensity...21,
                                     data = EEMO_Analysis)
 summary(model1) #aic = 705.48
 
-step(model1)
+summary(step(model1))
 model1.5 <- glm(views_per_follower ~ Likes +
                                      Comments +
                                      Days,
@@ -196,7 +193,7 @@ summary(model1.5) #aic = 697.1
 with(summary(model1.5), 1 - deviance/null.deviance) # (0.2627529)
 
 # regression with shares_per_followers
-model2 <- glm(shares_per_follower ~ Length +
+model2 <- lm(shares_per_follower ~ Length +
                                          Likes +
                                          Comments +
                                          evalance...16+
@@ -360,9 +357,6 @@ summary(pcr_lm_model)
 
 pcr_predictions <- predict(pcr_lm_model, trans_test)
 rmse(actual = test$view_per_follower, predicted = as.numeric(pcr_predictions)) # (1.950667)
-
-
-
 
 
 
